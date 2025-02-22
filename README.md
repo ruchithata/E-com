@@ -43,3 +43,6 @@ In Milestone 1, we focused on laying the groundwork for the e-commerce applicati
 
 Milestone 2: Login.jsx
 
+Milestone 3: Server.js, .env, db.js, errorhandler.js
+
+Milestone 4: 
