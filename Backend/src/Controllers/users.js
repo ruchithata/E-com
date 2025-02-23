@@ -5,6 +5,11 @@ const path = require('path');
 const Errorhandler = require("../utils/ErrorHandler");
 const { hash } = require("crypto");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv').config({
+    path:'src/config/.env'
+});
+
 
 const router = Router();
 
@@ -39,6 +44,33 @@ router.post('/create-user', upload.single('file'), async (req, res, next) => {
     catch (err) {
         next(err);
     }
+});
+
+
+const secret = process.env.PRIVATE_KEY;
+
+router.post('/login', async(req,res,next)=>{
+    try{
+        const {email, password} = req.body;
+        const user = await userModel.findOne({email});
+        if (!user){
+            return next(new Errorhandler("User dosen't exist", 400));
+        }
+    
+        const checkpassword = bcrypt.compare(password,user.password);
+        if (!checkpassword){
+            return next(new Errorhandler("Invalid password", 400));
+        }
+    
+        const token = jwt.sign({ email }, secret, { expiresIn:'1h' });
+    
+        console.log("Logged in successfully", email);
+        return res.status(200).json({ token });
+    }
+    catch (err){
+        console.log("error in logging in", err);
+    }
+
 });
 
 module.exports = router;
