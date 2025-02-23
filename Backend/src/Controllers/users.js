@@ -3,6 +3,8 @@ const { upload } = require("../../multer");
 const userModel = require("../Models/userModel");
 const path = require('path');
 const Errorhandler = require("../utils/ErrorHandler");
+const { hash } = require("crypto");
+const bcrypt = require('bcrypt');
 
 const router = Router();
 
@@ -18,13 +20,21 @@ router.post('/create-user', upload.single('file'), async (req, res, next) => {
         // const filename = req.file.filename;
         // const fileUrl = path.join('upload', filename);
 
-        const newUser = new userModel({
-            name: name,
-            email: email,
-            password: password,
-            // avatar: fileUrl
+        bcrypt.hash(password,10,async function(err,hash){
+            await userModel.create({
+                name: name,
+                email: email,
+                password: hash
+            });
         });
-        console.log(newUser);
+
+        // const newUser = new userModel({
+        //     name: name,
+        //     email: email,
+        //     password: password,
+        //     // avatar: fileUrl
+        // });
+// console.log(newUser);
      }
     catch (err) {
         next(err);
